@@ -14,7 +14,6 @@ const game = createGame();
 game.start();
 
 game.subscribe((command) => {
-  //console.log(`> Emitting ${command.type}`);
   sockets.emit(command.type, command);
 });
 
@@ -36,6 +35,10 @@ sockets.on("connection", (socket) => {
     command.type = "move-player";
 
     game.movePlayer(command);
+  });
+
+  socket.on("add-score", (command) => {
+    game.addScore(command);
   });
 });
 

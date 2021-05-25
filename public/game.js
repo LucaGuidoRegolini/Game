@@ -42,6 +42,7 @@ export default function createGame() {
         : Math.floor(Math.random() * state.screen.height);
 
     state.players[playerId] = {
+      score: 0,
       x: playerX,
       y: playerY,
     };
@@ -49,6 +50,7 @@ export default function createGame() {
     notifyAll({
       type: "add-player",
       playerId: playerId,
+      score: 0,
       playerX: playerX,
       playerY: playerY,
     });
@@ -101,6 +103,12 @@ export default function createGame() {
     });
   }
 
+  function addScore(command) {
+    const playerId = command.playerId;
+    const player = state.players[playerId];
+    player.score += 1;
+  }
+
   function movePlayer(command) {
     notifyAll(command);
 
@@ -139,6 +147,11 @@ export default function createGame() {
 
         if (player.x === fruit.x && player.y == fruit.y) {
           removeFruit({ fruitId: fruitId });
+          notifyAll({
+            type: "add-score",
+            playerId: playerId,
+            fruitId: fruitId,
+          });
         }
       }
     }
@@ -164,5 +177,6 @@ export default function createGame() {
     removeFruit,
     subscribe,
     start,
+    addScore,
   };
 }

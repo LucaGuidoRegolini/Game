@@ -1,9 +1,4 @@
-export default function renderScreen(
-  screen,
-  game,
-  requestAnimationFrame,
-  currentPlayerId
-) {
+function renderScreen(screen, game, requestAnimationFrame, currentPlayerId) {
   const context = screen.getContext("2d");
   context.fillStyle = "white";
   context.clearRect(0, 0, 10, 10);
@@ -26,7 +21,24 @@ export default function renderScreen(
     context.fillStyle = "#F0DB4F";
     context.fillRect(currentPlayer.x, currentPlayer.y, 1, 1);
   }
+
   requestAnimationFrame(() => {
     renderScreen(screen, game, requestAnimationFrame, currentPlayerId);
   });
 }
+
+function renderScore(document, li, game) {
+  li.innerText = "";
+  for (const playerId in game.state.players) {
+    const score = game.state.players[playerId].score;
+    const item = document.createElement("li");
+
+    item.appendChild(document.createTextNode(score));
+    li.appendChild(item);
+  }
+  requestAnimationFrame(() => {
+    renderScore(document, li, game);
+  });
+}
+
+export { renderScreen, renderScore };

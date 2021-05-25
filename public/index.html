@@ -3,29 +3,40 @@
     <meta charset="utf-8" />
     <title>Jogo Mutiplay</title>
     <style>
+      body {
+        display: flex;
+        margin: 0 auto;
+        max-width: 700px;
+      }
       #screen {
         border: 10px solid #ccc;
         image-rendering: pixelated;
         image-rendering: crisp-edges;
         image-rendering: -moz-crisp-edges;
-        width: 400px;
-        height: 400px;
+        width: 600px;
+        height: 600px;
+      }
+      .divisoria {
+        flex: 1;
       }
     </style>
     <script src="/socket.io/socket.io.js"></script>
   </head>
   <body>
     <canvas id="screen" width="10" height="10"></canvas>
+    <div class="divisoria"></div>
+    <ul id="score"></ul>
 
     <script type="module">
       import createKeyboardList from "./keyboard-listener.js";
       import createGame from "./game.js";
-      import renderScreen from "./render.js";
+      import { renderScreen, renderScore } from "./render.js";
 
       const game = createGame();
 
       const keyboardList = createKeyboardList(document);
       keyboardList.subscribe(game.movePlayer);
+      const li = document.getElementById("score");
 
       const socket = io();
 
@@ -46,6 +57,7 @@
         keyboardList.subscribe((command) => {
           socket.emit(command.type, command);
         });
+        renderScore(document, li, game);
       });
 
       socket.on("add-player", (command) => {
@@ -70,6 +82,14 @@
 
       socket.on("remove-fruit", (command) => {
         game.removeFruit(command);
+      });
+
+      socket.on("add-score", (command) => {
+        const li = document.getElementById("score");
+
+        game.addScore(command);
+        //renderScore(document, li, game);
+        socket.emit("add-score", command);
       });
     </script>
   </body>
